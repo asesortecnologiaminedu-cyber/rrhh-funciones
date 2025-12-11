@@ -1,0 +1,152 @@
+JSON STRUCTURE FOR WORD DOCUMENT TEMPLATE
+==========================================
+
+This document describes the JSON structure used for Word document template filling.
+The structure matches the Word document template format exactly for programmatic template filling.
+
+FILE: output-processed.json
+---------------------------
+This file contains all positions extracted from source files, structured for Word template filling.
+
+OVERALL STRUCTURE:
+{
+  "metadata": {
+    "source_file": "ESTADO PLURINACIONAL DE.txt",
+    "total_positions": 277,
+    "generated_date": "ISO 8601 datetime",
+    "position_codes": [1, 2, 3, ...]
+  },
+  "positions": {
+    "112": { ... },
+    "113": { ... },
+    ...
+  }
+}
+
+POSITION STRUCTURE:
+-------------------
+Each position follows this structure:
+
+{
+  "header": {
+    "form_number": "002",
+    "title": "MANUAL DE PUESTOS",
+    "ministry": "MINISTERIO DE EDUCACIÓN",
+    "plan_type": "PLAN OPERATIVO ANUAL INDIVIDUAL - GESTIÓN 2025",
+    "sap_code": "SAP/DP/POAI/F 001",
+    "version": "03"
+  },
+  "identificacion": {
+    "denominacion_puesto": "AUXILIAR EN VENTANILLA DE INFORMACIONES DE LEGALIZACIONES",
+    "codigo": "112",
+    "categoria": "OPERATIVO",
+    "nivel": "OCTAVO",
+    "unidad_organizacional": "UNIDAD DE RECURSOS HUMANOS Y DESARROLLO ORGANIZACIONAL",
+    "jefe_inmediato_superior": "JEFE DE LA UNIDAD DE RECURSOS HUMANOS Y DESARROLLO ORGANIZACIONAL",
+    "supervisa_a": ["NINGUNO"] or ["Position 1", "Position 2"],
+    "superior_jerarquico": "DIRECTOR GENERAL DE ASUNTOS ADMINISTRATIVOS"
+  },
+  "descripcion": {
+    "objetivo_del_puesto": "Full objective text...",
+    "funciones": [
+      {
+        "numero": 1,
+        "descripcion": "Function description text",
+        "porcentaje": 15
+      },
+      ...
+    ],
+    "resultados": [
+      {
+        "numero": 1,
+        "descripcion": "Result description text",
+        "porcentaje": 15
+      },
+      ...
+    ],
+    "normas_a_cumplir": [
+      "CONSTITUCIÓN POLÍTICA DEL ESTADO",
+      "LEY N° 1178 DE ADMINISTRACIÓN Y CONTROL GUBERNAMENTALES",
+      ...
+    ],
+    "cualidades_requeridas": {
+      "DESARROLLO PERSONAL Y/O INDIVIDUAL": [
+        "EMPATÍA",
+        "TRABAJO EN EQUIPO",
+        ...
+      ],
+      "CONTACTO CON COMPAÑEROS O VISITANTES A LA INSTITUCIÓN": [
+        "RESPONSABILIDAD POR LAS ACCIONES QUE SE REALIZA",
+        ...
+      ],
+      ...
+    },
+    "formacion_academica": "ESTUDIANTES DE CARRERAS UNIVERSITARIOS, INSTITUTOS TÉCNICOS, BACHILLER EN HUMANIDADES O CERTIFICADO DE COMPETENCIA",
+    "formacion_adicional": [
+      "CURSO DE IDIOMA NATIVO",
+      "LEY N° 1178",
+      ...
+    ],
+    "experiencia_general": "6 MESES",
+    "experiencia_especifica": "NINGUNA"
+  }
+}
+
+WORD TEMPLATE FIELD MAPPING:
+----------------------------
+The JSON structure maps directly to Word document template fields:
+
+HEADER SECTION:
+- form_number → FORM 002
+- title → MANUAL DE PUESTOS
+- ministry → MINISTERIO DE EDUCACIÓN
+- plan_type → PLAN OPERATIVO ANUAL INDIVIDUAL - GESTIÓN 2025
+- sap_code → SAP/DP/POAI/F 001
+- version → VERSIÓN 03
+
+IDENTIFICACIÓN DEL PUESTO:
+- denominacion_puesto → DENOMINACIÓN DEL PUESTO:
+- codigo → CÓDIGO:
+- categoria → CATEGORÍA:
+- nivel → NIVEL:
+- unidad_organizacional → UNIDAD ORGANIZACIONAL:
+- jefe_inmediato_superior → DENOMINACIÓN JEFE INMEDIATO SUPERIOR:
+- supervisa_a → SUPERVISA A: (list items)
+- superior_jerarquico → DENOMINACIÓN SUPERIOR JERÁRQUICO:
+
+DESCRIPCIÓN DEL PUESTO:
+- objetivo_del_puesto → A. OBJETIVO DEL PUESTO:
+- funciones → B. FUNCIONES (array of numbered items with percentages)
+- resultados → C. RESULTADOS (array of numbered items matching functions)
+- normas_a_cumplir → D. NORMAS A CUMPLIR (array of bullet points)
+- cualidades_requeridas → E. CUALIDADES REQUERIDAS (structured object)
+- formacion_academica → G. FORMACIÓN ACADÉMICA:
+- formacion_adicional → H. FORMACIÓN ADICIONAL (array)
+- experiencia_general → H. EXPERIENCIA LABORAL Y/O PROFESIONAL GENERAL
+- experiencia_especifica → I. EXPERIENCIA LABORAL Y/O PROFESIONAL ESPECÍFICA
+
+USAGE:
+------
+To use this JSON structure for Word template filling:
+
+1. Load the JSON file: `output-processed.json`
+2. Access a position by code: `data["positions"]["112"]`
+3. Map each field to Word template placeholders or bookmarks
+4. Fill the Word document programmatically using the structured data
+
+EXAMPLE ACCESS:
+---------------
+import json
+
+with open('output/output-processed.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# Get position 112
+pos_112 = data["positions"]["112"]
+
+# Access fields
+print(pos_112["identificacion"]["denominacion_puesto"])
+print(pos_112["descripcion"]["objetivo_del_puesto"])
+for func in pos_112["descripcion"]["funciones"]:
+    print(f"{func['numero']}. {func['descripcion']} ({func['porcentaje']}%)")
+
