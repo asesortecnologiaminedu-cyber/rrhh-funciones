@@ -15,6 +15,7 @@ interface NavItem {
   title: string
   url: string
   icon?: Component
+  action?: () => void
 }
 
 defineProps<{
@@ -46,7 +47,7 @@ defineProps<{
       </SidebarMenu>
       <SidebarMenu>
         <SidebarMenuItem v-for="item in items" :key="item.title">
-          <SidebarMenuButton :tooltip="item.title">
+          <SidebarMenuButton :tooltip="item.title" @click="item.action && item.action()">
             <component :is="item.icon" v-if="item.icon" />
             <span>{{ item.title }}</span>
           </SidebarMenuButton>

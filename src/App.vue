@@ -6,6 +6,15 @@ import SectionCards from '@/components/SectionCards.vue'
 import ChartAreaInteractive from '@/components/ChartAreaInteractive.vue'
 import PositionsDataCard from '@/components/PositionsDataCard.vue'
 import PositionsList from '@/components/PositionsList.vue'
+import { ref, provide } from 'vue'
+
+const currentView = ref('Dashboard')
+
+const changeView = (view: string) => {
+  currentView.value = view
+}
+
+provide('changeView', changeView)
 </script>
 
 <template>
@@ -16,10 +25,10 @@ import PositionsList from '@/components/PositionsList.vue'
         <SiteHeader />
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
           <!-- <SectionCards /> -->
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div v-if="currentView === 'Dashboard'" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <PositionsDataCard />
           </div>
-          <div class="p-4 lg:p-6">
+          <div v-if="currentView === 'Lifecycle'" class="p-4 lg:p-6">
             <!-- ChartAreaInteractive  -->
             <PositionsList />
           </div>

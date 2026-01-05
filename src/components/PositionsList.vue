@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import PositionCard from './PositionCard.vue'
+import { Input } from '@/components/ui/input'
 
 interface Position {
   header: {
@@ -48,6 +49,25 @@ interface PositionData {
 const positions = ref<Array<{ code: string; data: Position }>>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const searchQuery = ref('')
+
+const normalizeText = (text: string) => {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+const filteredPositions = computed(() => {
+  if (!searchQuery.value.trim()) return positions.value
+
+  const query = normalizeText(searchQuery.value)
+  return positions.value.filter(({ code, data }) => {
+    return (
+      normalizeText(code).includes(query) ||
+      normalizeText(data.identificacion.denominacion_puesto).includes(query) ||
+      normalizeText(data.identificacion.unidad_organizacional).includes(query) ||
+      normalizeText(data.header.form_number).includes(query)
+    )
+  })
+})
 
 onMounted(async () => {
   try {
@@ -72,7 +92,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="positions-container">
+  <div class="positions-container flex flex-col gap-4">
+    <div class="flex items-center gap-2 max-w-md">
+      <Input
+        v-model="searchQuery"
+        placeholder="Buscar por puesto, código, unidad..."
+        class="h-9"
+      />
+    </div>
+
     <div v-if="loading" class="loading-state">
       <p class="text-muted-foreground">Cargando puestos...</p>
     </div>
@@ -83,11 +111,14 @@ onMounted(async () => {
 
     <div v-else class="positions-grid">
       <PositionCard
-        v-for="position in positions"
+        v-for="position in filteredPositions"
         :key="position.code"
         :position="position.data"
         :code="position.code"
       />
+      <div v-if="filteredPositions.length === 0" class="text-center text-muted-foreground py-8">
+        No se encontraron resultados para "{{ searchQuery }}"
+      </div>
     </div>
   </div>
 </template>

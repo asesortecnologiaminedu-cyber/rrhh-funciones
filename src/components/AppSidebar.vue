@@ -29,6 +29,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { inject } from 'vue'
+
+const changeView = inject<(view: string) => void>('changeView')
 
 const data = {
   user: {
@@ -41,11 +44,13 @@ const data = {
       title: "Dashboard",
       url: "#",
       icon: IconDashboard,
+      action: () => changeView?.('Dashboard'),
     },
     {
       title: "Lifecycle",
       url: "#",
       icon: IconListDetails,
+      action: () => changeView?.('Lifecycle'),
     },
     {
       title: "Analytics",
